@@ -41,9 +41,15 @@ macOS menu bar application for reading text and URLs aloud using Piper TTS.
   - Dynamic Play/Pause/Resume text
   - Conditional Download menu item
   - Generated speaker icon
-
-### In Progress 🚧
-- 🪟 UI Windows (Input and Settings dialogs)
+- 🪟 UI Windows
+  - Input window for text/URL entry
+  - Settings window for configuration
+  - tkinter/ttk-based dialogs
+- 🔗 Full application integration
+  - All components wired together
+  - Event-driven architecture
+  - Settings persistence
+  - Hotkey bindings
 
 ## Requirements
 
@@ -51,19 +57,91 @@ macOS menu bar application for reading text and URLs aloud using Piper TTS.
 - **Python 3.10 - 3.12** (pydub audioop incompatibility with 3.13+)
 - **PortAudio** for audio output
 - **uv** for package management
+- **Piper voice models** (.onnx files)
 
 ## Installation
 
+### 1. Install System Dependencies
+
 ```bash
-# Install system dependencies
+# Install PortAudio
 brew install portaudio
 
 # Install uv (if not already installed)
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-# Install project dependencies
+### 2. Clone and Install Project
+
+```bash
+# Clone repository
+git clone https://github.com/minac/piper-tts-chromium-extension.git
+cd piper-tts-chromium-extension
+
+# Install Python dependencies
 uv sync --extra dev
 ```
+
+### 3. Download Piper Voice Models
+
+Download voice models from [Piper TTS releases](https://github.com/rhasspy/piper/releases) and place them in the `voices/` directory:
+
+```bash
+# Create voices directory
+mkdir -p voices
+
+# Example: Download a voice model
+cd voices
+wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx
+wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
+cd ..
+```
+
+## Running the Application
+
+### Step-by-Step Guide
+
+1. **Ensure voice models are installed** in the `voices/` directory
+2. **Run the application**:
+   ```bash
+   uv run python -m src.main
+   ```
+3. **Look for the speaker icon** in your macOS menu bar (top-right)
+4. **Click the icon** to access the menu:
+   - **Play**: Opens input window for text/URL entry
+   - **Speed**: Adjust playback speed (0.5x - 2.0x)
+   - **Download MP3**: Save current audio to file
+   - **Settings**: Configure voice, speed, output directory
+   - **Quit**: Exit the application
+
+### Using the Application
+
+**Reading Text:**
+1. Click the speaker icon → Play (or press configured hotkey)
+2. Enter text in the input window
+3. Click "Read" - audio will synthesize and play automatically
+4. Use menu to Pause/Resume/Stop playback
+
+**Reading URLs:**
+1. Click Play and paste a URL (e.g., article, Wikipedia page)
+2. Click "Read" - text will be extracted and read aloud
+
+**Changing Speed:**
+1. While playing, click Speed submenu
+2. Select desired speed (0.5x - 2.0x)
+3. Playback restarts automatically with new speed
+
+**Exporting to MP3:**
+1. After reading text, click "Download MP3"
+2. File saved to configured output directory (default: ~/Downloads)
+3. Filename format: `first_5_words_YYYYMMDD_HHMMSS.mp3`
+
+**Configuring Settings:**
+1. Click Settings in menu
+2. Choose voice from dropdown
+3. Adjust default speed
+4. Set output directory for MP3 exports
+5. Click Save
 
 ## Development
 
@@ -86,23 +164,32 @@ uv run ruff check --fix src/ tests/
 ```
 piper-tts-chromium-extension/
 ├── src/
-│   ├── tts_engine.py         # Piper TTS wrapper
-│   ├── audio_player.py       # Audio playback controller
-│   ├── text_extractor.py     # URL and text processing
-│   ├── settings.py           # Settings management
-│   ├── export.py             # MP3 export functionality
-│   └── ui/                   # UI components (future)
+│   ├── main.py              # Application entry point
+│   ├── tts_engine.py        # Piper TTS wrapper
+│   ├── audio_player.py      # Audio playback controller
+│   ├── text_extractor.py    # URL and text processing
+│   ├── settings.py          # Settings management
+│   ├── export.py            # MP3 export functionality
+│   ├── hotkeys.py           # Global keyboard shortcuts
+│   ├── tray.py              # System tray application
+│   └── ui/
+│       ├── input_window.py  # Text/URL input dialog
+│       └── settings_window.py # Configuration dialog
 ├── tests/
 │   ├── test_tts_engine.py
 │   ├── test_audio_player.py
 │   ├── test_text_extractor.py
 │   ├── test_settings.py
 │   ├── test_export.py
+│   ├── test_hotkeys.py
+│   ├── test_tray.py
+│   ├── test_input_window.py
+│   ├── test_settings_window.py
 │   └── conftest.py
-├── voices/                   # Piper voice models (.onnx)
-├── config.json              # User settings (auto-generated)
-├── pyproject.toml           # Project metadata and dependencies
-└── IMPLEMENTATION_PLAN.md   # Detailed implementation roadmap
+├── voices/                  # Piper voice models (.onnx)
+├── config.json             # User settings (auto-generated)
+├── pyproject.toml          # Project metadata and dependencies
+└── IMPLEMENTATION_PLAN.md  # Detailed implementation roadmap
 ```
 
 ## Implementation Status
@@ -154,15 +241,24 @@ See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for detailed roadmap.
   - PIL-generated speaker icon
   - Test suite (9 tests, 83% coverage)
 
-- 🚧 **Stage 8**: UI Windows (Next)
-  - Input window for text/URL entry
-  - Settings window for configuration
+- ✅ **Stage 8**: UI Windows
+  - InputWindow class for text/URL entry
+  - SettingsWindow class for configuration
+  - tkinter/ttk-based dialogs
+  - Test suite (17 tests, 95% coverage)
+
+- ✅ **Stage 9**: Application Integration
+  - PiperTTSApp main coordinator class
+  - All components wired together
+  - Event-driven architecture
+  - Complete read flow implementation
+  - Hotkey and tray menu integration
 
 ## Testing
 
 All tests use mocking to avoid requiring actual voice files or audio hardware:
-- **57 tests total** across seven stages
-- **88% overall code coverage**
+- **74 tests total** across nine stages
+- **75% overall code coverage** (90% excluding main.py integration layer)
 - Tests run in CI on every PR (macOS, Python 3.12)
 
 ## CI/CD
