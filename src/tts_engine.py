@@ -87,7 +87,7 @@ class PiperTTSEngine:
         """Get the currently loaded voice name"""
         return self._current_voice_name
 
-    def synthesize(self, text: str, speed: float = 1.0) -> np.ndarray:
+    def synthesize(self, text: str, speed: float = 1.0) -> tuple[np.ndarray, int]:
         """
         Synthesize text to audio
 
@@ -96,7 +96,9 @@ class PiperTTSEngine:
             speed: Playback speed multiplier (0.5 = half speed, 2.0 = double speed)
 
         Returns:
-            Audio data as numpy array of int16 samples
+            Tuple of (audio_data, sample_rate):
+                - audio_data: numpy array of int16 samples
+                - sample_rate: sample rate in Hz
 
         Raises:
             ValueError: If text is empty
@@ -137,7 +139,7 @@ class PiperTTSEngine:
                 f"at {speed}x speed"
             )
 
-            return audio_data
+            return audio_data, self._sample_rate
 
         except Exception as e:
             raise TTSError(f"Synthesis failed: {e}") from e

@@ -66,11 +66,18 @@ class PiperTTSApp:
         voices_dir = Path(__file__).parent.parent / "voices"
         self._tts_engine = PiperTTSEngine(str(voices_dir))
 
-        # Load voice from settings
+        # Load voice from settings (or first available voice)
         voice_name = self._settings.get("voice")
         available_voices = self._tts_engine.discover_voices()
-        if voice_name in available_voices:
+        if voice_name and voice_name in available_voices:
             self._tts_engine.load_voice(voice_name)
+            logger.debug("voice_loaded_from_settings", voice=voice_name)
+        elif available_voices:
+            # Load first available voice if configured voice not found
+            self._tts_engine.load_voice(available_voices[0])
+            logger.info("voice_loaded_fallback", voice=available_voices[0])
+        else:
+            logger.warning("no_voices_available")
 
         # Initialize audio player
         self._audio_player = AudioPlayer()
@@ -231,7 +238,7 @@ class PiperTTSApp:
 
         # Reload voice if changed
         new_voice = self._settings.get("voice")
-        if new_voice != self._tts_engine.get_current_voice():
+        if new_voice and new_voice != self._tts_engine.current_voice:
             self._tts_engine.load_voice(new_voice)
 
     def _on_playback_complete(self):
