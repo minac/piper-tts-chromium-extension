@@ -82,11 +82,25 @@ class PiperTTSApp:
                 self._hotkey_manager.register(shortcuts["stop"], self._on_stop)
 
         # Connect tray menu actions
-        self._tray_app._read_text = lambda icon, item: self._show_input_window()
+        def safe_read_text(icon, item):
+            try:
+                logger.info("read_text_handler_called")
+                self._show_input_window()
+            except Exception as e:
+                logger.error("read_text_handler_failed", error=str(e), exc_info=True)
+
+        def safe_settings(icon, item):
+            try:
+                logger.info("settings_handler_called")
+                self._on_open_settings()
+            except Exception as e:
+                logger.error("settings_handler_failed", error=str(e), exc_info=True)
+
+        self._tray_app._read_text = safe_read_text
         self._tray_app._play_pause = lambda icon, item: self._on_play_pause()
         self._tray_app._stop = lambda icon, item: self._on_stop()
         self._tray_app._download = lambda icon, item: self._on_download()
-        self._tray_app._open_settings = lambda icon, item: self._on_open_settings()
+        self._tray_app._open_settings = safe_settings
         self._tray_app._change_speed = lambda icon, item, speed: self._on_speed_change(
             speed
         )
