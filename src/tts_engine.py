@@ -122,7 +122,12 @@ class PiperTTSEngine:
 
             # Create in-memory WAV file
             wav_stream = io.BytesIO()
-            self._voice.synthesize(text, wav_stream)
+
+            # Open BytesIO as a wave file in write mode for synthesis
+            with wave.open(wav_stream, 'wb') as wav_write:
+                self._voice.synthesize(text, wav_write)
+
+            # Seek back to beginning to read the data
             wav_stream.seek(0)
 
             # Read audio data from WAV

@@ -30,19 +30,14 @@ class TestPiperTTSEngine:
 
         import numpy as np
 
-        # Create mock WAV data
-        mock_wav = io.BytesIO()
-        with wave.open(mock_wav, "wb") as wf:
-            wf.setnchannels(1)
-            wf.setsampwidth(2)  # 16-bit
-            wf.setframerate(22050)
-            # Write 1024 samples of silence
-            wf.writeframes(b"\x00" * 2048)
-        mock_wav.seek(0)
-
         # Mock piper-tts synthesis
         def mock_synthesize(text, output_stream):
-            output_stream.write(mock_wav.getvalue())
+            # Configure the wave file (this is what Piper does internally)
+            output_stream.setnchannels(1)
+            output_stream.setsampwidth(2)  # 16-bit
+            output_stream.setframerate(22050)
+            # Write 1024 samples of silence
+            output_stream.writeframes(b"\x00" * 2048)
 
         mocker.patch("piper.PiperVoice.load")
         engine = PiperTTSEngine(voices_dir=temp_voices_dir)
@@ -51,30 +46,26 @@ class TestPiperTTSEngine:
         # Mock the synthesize method
         mocker.patch.object(engine._voice, "synthesize", side_effect=mock_synthesize)
 
-        audio_data = engine.synthesize("Hello world")
+        audio_data, sample_rate = engine.synthesize("Hello world")
 
         assert audio_data is not None
         assert len(audio_data) > 0
         assert isinstance(audio_data, np.ndarray)
+        assert sample_rate == 22050
 
     def test_synthesize_with_speed_adjustment(self, temp_voices_dir, mock_voice_file, mocker):
         """Should adjust audio speed correctly"""
         import io
         import wave
 
-        # Create mock WAV data with more samples
-        mock_wav = io.BytesIO()
-        with wave.open(mock_wav, "wb") as wf:
-            wf.setnchannels(1)
-            wf.setsampwidth(2)  # 16-bit
-            wf.setframerate(22050)
-            # Write 44100 samples (2 seconds at 22050 Hz)
-            wf.writeframes(b"\x00" * 88200)
-        mock_wav.seek(0)
-
         # Mock piper-tts synthesis
         def mock_synthesize(text, output_stream):
-            output_stream.write(mock_wav.getvalue())
+            # Configure the wave file (this is what Piper does internally)
+            output_stream.setnchannels(1)
+            output_stream.setsampwidth(2)  # 16-bit
+            output_stream.setframerate(22050)
+            # Write 44100 samples (2 seconds at 22050 Hz)
+            output_stream.writeframes(b"\x00" * 88200)
 
         mocker.patch("piper.PiperVoice.load")
         engine = PiperTTSEngine(voices_dir=temp_voices_dir)
@@ -84,8 +75,8 @@ class TestPiperTTSEngine:
         mocker.patch.object(engine._voice, "synthesize", side_effect=mock_synthesize)
 
         # Test different speeds
-        audio_normal = engine.synthesize("Hello", speed=1.0)
-        audio_fast = engine.synthesize("Hello", speed=2.0)
+        audio_normal, _ = engine.synthesize("Hello", speed=1.0)
+        audio_fast, _ = engine.synthesize("Hello", speed=2.0)
 
         # Faster speed should produce shorter audio
         assert len(audio_fast) < len(audio_normal)
