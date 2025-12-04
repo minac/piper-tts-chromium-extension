@@ -14,9 +14,12 @@ class InputWindow:
             callback: Function to call with submitted text
         """
         self._callback = callback
-        self._window = tk.Tk()
+        self._window = tk.Toplevel()
         self._window.title("Piper TTS Reader")
         self._window.geometry("600x400")
+        self._window.lift()
+        self._window.attributes('-topmost', True)
+        self._window.after_idle(self._window.attributes, '-topmost', False)
 
         # Create UI elements
         self._create_widgets()
@@ -101,4 +104,5 @@ class InputWindow:
 
     def show(self):
         """Display the window."""
-        self._window.mainloop()
+        self._window.deiconify()
+        self._window.focus_force()

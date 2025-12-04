@@ -1,5 +1,6 @@
 """Main application entry point."""
 
+import tkinter as tk
 from pathlib import Path
 
 from src.audio_player import AudioPlayer
@@ -18,6 +19,10 @@ class PiperTTSApp:
 
     def __init__(self):
         """Initialize application."""
+        # Initialize hidden tkinter root for Toplevel windows
+        self._tk_root = tk.Tk()
+        self._tk_root.withdraw()
+
         # Load settings
         self._settings = Settings()
 
@@ -68,6 +73,7 @@ class PiperTTSApp:
                 self._hotkey_manager.register(shortcuts["stop"], self._on_stop)
 
         # Connect tray menu actions
+        self._tray_app._read_text = lambda icon, item: self._show_input_window()
         self._tray_app._play_pause = lambda icon, item: self._on_play_pause()
         self._tray_app._stop = lambda icon, item: self._on_stop()
         self._tray_app._download = lambda icon, item: self._on_download()
