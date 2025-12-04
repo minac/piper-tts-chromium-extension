@@ -66,7 +66,7 @@ class TrayApplication:
             pystray Menu object
         """
         return Menu(
-            MenuItem("Read Text...", self._read_text),
+            MenuItem("Read Text...", lambda icon, item: self._read_text(icon, item)),
             Menu.SEPARATOR,
             MenuItem(
                 "Speed",
@@ -81,17 +81,17 @@ class TrayApplication:
             ),
             MenuItem(
                 lambda _: self._get_play_pause_text(),
-                self._play_pause,
+                lambda icon, item: self._play_pause(icon, item),
             ),
-            MenuItem("Stop", self._stop),
+            MenuItem("Stop", lambda icon, item: self._stop(icon, item)),
             MenuItem(
                 "Download MP3",
-                self._download,
+                lambda icon, item: self._download(icon, item),
                 enabled=self._download_enabled,
             ),
             Menu.SEPARATOR,
-            MenuItem("Settings", self._open_settings),
-            MenuItem("Quit", self._quit),
+            MenuItem("Settings", lambda icon, item: self._open_settings(icon, item)),
+            MenuItem("Quit", lambda icon, item: self._quit(icon, item)),
         )
 
     def _get_play_pause_text(self) -> str:
