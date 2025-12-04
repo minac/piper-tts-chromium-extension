@@ -1,5 +1,6 @@
 """Main application entry point."""
 
+import tkinter as tk
 from pathlib import Path
 
 from src.audio_player import AudioPlayer
@@ -18,6 +19,10 @@ class PiperTTSApp:
 
     def __init__(self):
         """Initialize application."""
+        # Initialize hidden tkinter root for Toplevel windows
+        self._tk_root = tk.Tk()
+        self._tk_root.withdraw()
+
         # Load settings
         self._settings = Settings()
 

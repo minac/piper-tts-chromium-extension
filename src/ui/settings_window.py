@@ -21,9 +21,12 @@ class SettingsWindow:
         self._available_voices = available_voices
 
         # Create window
-        self._window = tk.Tk()
+        self._window = tk.Toplevel()
         self._window.title("Settings")
         self._window.geometry("500x400")
+        self._window.lift()
+        self._window.attributes('-topmost', True)
+        self._window.after_idle(self._window.attributes, '-topmost', False)
 
         # Variables for form fields
         self._voice_var = tk.StringVar()
@@ -143,4 +146,5 @@ class SettingsWindow:
 
     def show(self):
         """Display the window."""
-        self._window.mainloop()
+        self._window.deiconify()
+        self._window.focus_force()
