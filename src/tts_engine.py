@@ -16,14 +16,17 @@ class TTSError(Exception):
 class PiperTTSEngine:
     """Wrapper for Piper TTS synthesis with voice management and speed control"""
 
-    def __init__(self, voices_dir: Path | None = None):
+    def __init__(self, voices_dir: Path | str | None = None):
         """
         Initialize TTS engine
 
         Args:
             voices_dir: Directory containing voice model files (.onnx)
         """
-        self.voices_dir = voices_dir or Path(__file__).parent.parent / "voices"
+        if voices_dir is None:
+            self.voices_dir = Path(__file__).parent.parent / "voices"
+        else:
+            self.voices_dir = Path(voices_dir)
         self._voice: PiperVoice | None = None
         self._current_voice_name: str | None = None
         self._sample_rate: int = 22050
