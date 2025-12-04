@@ -38,7 +38,7 @@ macOS menu bar application for reading text and URLs aloud using Piper TTS.
 ## Requirements
 
 - **macOS** (primary target platform)
-- **Python 3.10 - 3.13** (onnxruntime doesn't support 3.14 yet)
+- **Python 3.10 - 3.12** (pydub audioop incompatibility with 3.13+)
 - **PortAudio** for audio output
 - **uv** for package management
 
@@ -138,7 +138,7 @@ See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for detailed roadmap.
 All tests use mocking to avoid requiring actual voice files or audio hardware:
 - **42 tests total** across five stages
 - **89% overall code coverage**
-- Tests run in CI on every PR (macOS, Python 3.13)
+- Tests run in CI on every PR (macOS, Python 3.12)
 
 ## CI/CD
 
@@ -146,7 +146,7 @@ GitHub Actions workflow runs on every PR:
 - Linting with ruff
 - Full test suite
 - macOS environment
-- Python 3.13
+- Python 3.12
 
 ## License
 

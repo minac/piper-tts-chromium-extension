@@ -27,7 +27,8 @@
 
 - **Target Platform**: macOS first (later Linux/Windows)
   - Uses PortAudio backend via sounddevice
-  - System requirements: macOS, Python 3.10-3.13, PortAudio
+  - System requirements: macOS, Python 3.10-3.12, PortAudio
+  - Python 3.13+ not supported due to pydub/audioop incompatibility
 
 ### Module Responsibilities
 - `tts_engine.py`: Voice discovery, loading, text→audio synthesis
@@ -61,7 +62,7 @@
 ### Testing Strategy
 - Mock external dependencies (Piper API, sounddevice, filesystem, network)
 - Unit tests for each module with high coverage (89% overall)
-- CI runs on macOS with Python 3.13
+- CI runs on macOS with Python 3.12
 - No real voice files, network calls, or audio hardware needed
 
 ### Current Limitations
@@ -69,7 +70,7 @@
 - No streaming synthesis (full text→audio upfront)
 - No chunking for long texts (memory constraint risk)
 - Audio playback lines 187-227 not fully tested (thread/callback edge cases)
-- pydub warning about deprecated audioop module (Python 3.13+)
+- Python 3.13+ not supported (pydub requires audioop, removed in 3.13)
 
 ### Next Stage Priorities
 1. Global keyboard shortcuts (Stage 6)
