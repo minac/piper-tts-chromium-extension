@@ -29,8 +29,8 @@ class SettingsWindow:
         self._window.title("Settings")
 
         # Position window in top-right corner (same as input window)
-        window_width = 500
-        window_height = 250
+        window_width = 480
+        window_height = 260
 
         # Update to get screen dimensions
         self._window.update_idletasks()
@@ -45,6 +45,9 @@ class SettingsWindow:
         self._window.lift()
         self._window.attributes('-topmost', True)
         self._window.after_idle(self._window.attributes, '-topmost', False)
+
+        # Remove window decorations for cleaner look
+        self._window.overrideredirect(True)
 
         # Variables for form fields
         self._voice_var = tk.StringVar()
@@ -64,20 +67,29 @@ class SettingsWindow:
 
     def _create_widgets(self):
         """Create all window widgets."""
+        # Container with border
+        container = tk.Frame(
+            self._window,
+            bg="white",
+            highlightbackground="#d1d1d6",
+            highlightthickness=1,
+        )
+        container.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
+
         # Main frame with padding
-        main_frame = tk.Frame(self._window, padx=25, pady=25, bg="#f5f5f7")
+        main_frame = tk.Frame(container, padx=20, pady=20, bg="white")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Voice selection
         voice_label = tk.Label(
             main_frame,
             text="Voice:",
-            font=("SF Pro Text", 12),
-            fg="#1d1d1f",
-            bg="#f5f5f7",
+            font=("SF Pro Text", 11),
+            fg="#86868b",
+            bg="white",
             anchor="w",
         )
-        voice_label.grid(row=0, column=0, sticky="w", pady=(0, 8))
+        voice_label.grid(row=0, column=0, sticky="w", pady=(0, 6))
 
         voice_combo = ttk.Combobox(
             main_frame,
@@ -93,34 +105,35 @@ class SettingsWindow:
         output_label = tk.Label(
             main_frame,
             text="Output Directory:",
-            font=("SF Pro Text", 12),
-            fg="#1d1d1f",
-            bg="#f5f5f7",
+            font=("SF Pro Text", 11),
+            fg="#86868b",
+            bg="white",
             anchor="w",
         )
-        output_label.grid(row=1, column=0, sticky="w", pady=(0, 8))
+        output_label.grid(row=1, column=0, sticky="w", pady=(0, 6))
 
         output_entry = tk.Entry(
             main_frame,
             textvariable=self._output_dir_var,
             font=("SF Pro Text", 12),
-            relief=tk.SOLID,
-            bd=1,
+            relief=tk.FLAT,
+            bd=0,
             highlightthickness=0,
+            bg="#f5f5f7",
         )
-        output_entry.grid(row=1, column=1, sticky="ew", pady=(0, 15))
+        output_entry.grid(row=1, column=1, sticky="ew", pady=(0, 15), ipady=6)
 
         browse_btn = tk.Button(
             main_frame,
-            text="Browse...",
+            text="Browse",
             command=self._browse_directory,
             font=("SF Pro Text", 11),
             relief=tk.FLAT,
             bd=0,
-            bg="#e5e5ea",
-            fg="#1d1d1f",
-            padx=15,
-            pady=5,
+            bg="#f5f5f7",
+            fg="#007AFF",
+            padx=12,
+            pady=6,
         )
         browse_btn.grid(row=1, column=2, padx=(8, 0), pady=(0, 15))
 
@@ -128,28 +141,10 @@ class SettingsWindow:
         main_frame.columnconfigure(1, weight=1)
 
         # Button frame
-        button_frame = tk.Frame(main_frame, bg="#f5f5f7")
-        button_frame.grid(row=2, column=0, columnspan=3, pady=(15, 0))
+        button_frame = tk.Frame(main_frame, bg="white")
+        button_frame.grid(row=2, column=0, columnspan=3, pady=(20, 0), sticky="e")
 
-        # Save button (Mac-style accent button)
-        save_btn = tk.Button(
-            button_frame,
-            text="Save",
-            command=self._on_save,
-            bg="#007AFF",
-            fg="white",
-            font=("SF Pro Text", 13, "bold"),
-            relief=tk.FLAT,
-            bd=0,
-            highlightthickness=0,
-            padx=30,
-            pady=8,
-            activebackground="#0051D5",
-            activeforeground="white",
-        )
-        save_btn.pack(side=tk.LEFT, padx=5)
-
-        # Cancel button
+        # Cancel button (secondary)
         cancel_btn = tk.Button(
             button_frame,
             text="Cancel",
@@ -158,12 +153,30 @@ class SettingsWindow:
             relief=tk.FLAT,
             bd=0,
             highlightthickness=0,
-            bg="#e5e5ea",
-            fg="#1d1d1f",
-            padx=30,
+            bg="white",
+            fg="#86868b",
+            padx=25,
             pady=8,
         )
-        cancel_btn.pack(side=tk.LEFT, padx=5)
+        cancel_btn.pack(side=tk.LEFT, padx=(0, 8))
+
+        # Save button (primary, Mac-style)
+        save_btn = tk.Button(
+            button_frame,
+            text="Save",
+            command=self._on_save,
+            bg="#007AFF",
+            fg="white",
+            font=("SF Pro Text", 13),
+            relief=tk.FLAT,
+            bd=0,
+            highlightthickness=0,
+            padx=35,
+            pady=8,
+            activebackground="#0051D5",
+            activeforeground="white",
+        )
+        save_btn.pack(side=tk.LEFT)
 
     def _browse_directory(self):
         """Open directory browser."""

@@ -102,7 +102,7 @@ class TestInputWindow:
         mock_window.geometry.assert_called_once()
         # Verify geometry string includes position
         geometry_call = mock_window.geometry.call_args[0][0]
-        assert "400x200+" in geometry_call  # Should have width x height + x + y format
+        assert "420x240+" in geometry_call  # Should have width x height + x + y format
 
     def test_text_area_created(self, mocker):
         """Should create text area widget."""

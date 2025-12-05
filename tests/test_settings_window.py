@@ -104,7 +104,7 @@ class TestSettingsWindow:
         mock_window.geometry.assert_called_once()
         # Verify geometry string includes position
         geometry_call = mock_window.geometry.call_args[0][0]
-        assert "500x250+" in geometry_call  # Should have width x height + x + y format
+        assert "480x260+" in geometry_call  # Should have width x height + x + y format
 
     def test_output_directory_field_created(self, mocker):
         """Should create output directory entry."""

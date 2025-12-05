@@ -30,8 +30,8 @@ class InputWindow:
         self._window.title("Piper TTS Reader")
 
         # Position window in top-right corner
-        window_width = 400
-        window_height = 200
+        window_width = 420
+        window_height = 240
 
         # Update to get screen dimensions
         self._window.update_idletasks()
@@ -46,6 +46,9 @@ class InputWindow:
         self._window.attributes('-topmost', True)
         self._window.after_idle(self._window.attributes, '-topmost', False)
 
+        # Remove window decorations for cleaner look
+        self._window.overrideredirect(True)
+
         # Bind ESC key to close window
         self._window.bind('<Escape>', lambda e: self._window.destroy())
 
@@ -58,37 +61,46 @@ class InputWindow:
 
     def _create_widgets(self):
         """Create all window widgets."""
+        # Container with rounded corners and shadow effect
+        container = tk.Frame(
+            self._window,
+            bg="white",
+            highlightbackground="#d1d1d6",
+            highlightthickness=1,
+        )
+        container.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
+
         # Main frame with padding
-        main_frame = tk.Frame(self._window, padx=20, pady=20, bg="#f5f5f7")
+        main_frame = tk.Frame(container, padx=18, pady=18, bg="white")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Instructions label (Mac-style)
+        # Instructions label (Mac-style, lighter weight)
         instructions = tk.Label(
             main_frame,
-            text="Enter text or paste a URL to read aloud:",
-            font=("SF Pro Text", 12),
-            fg="#1d1d1f",
-            bg="#f5f5f7",
+            text="Enter text or URL:",
+            font=("SF Pro Text", 11),
+            fg="#86868b",
+            bg="white",
             anchor="w",
         )
-        instructions.pack(pady=(0, 10), fill=tk.X)
+        instructions.pack(pady=(0, 8), fill=tk.X)
 
-        # Text area frame for border effect
-        text_frame = tk.Frame(main_frame, bg="#e5e5ea", bd=1, relief=tk.SOLID)
-        text_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
+        # Text area frame for subtle border
+        text_frame = tk.Frame(main_frame, bg="#f5f5f7", bd=0)
+        text_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 12))
 
-        # Text area (Mac-style with placeholder effect)
+        # Text area (Mac-style minimal)
         self._text_area = tk.Text(
             text_frame,
             wrap=tk.WORD,
             font=("SF Pro Text", 13),
             relief=tk.FLAT,
-            bd=5,
+            bd=8,
             highlightthickness=0,
-            bg="white",
+            bg="#f5f5f7",
             fg="#1d1d1f",
             insertbackground="#007AFF",  # Blue cursor
-            height=4,
+            height=5,
         )
         self._text_area.pack(fill=tk.BOTH, expand=True)
         # Bind text change events to update button state
@@ -96,38 +108,42 @@ class InputWindow:
         # Focus the text area so cursor blinks
         self._text_area.focus_set()
 
-        # Play button (Mac-style accent button with proper visibility)
+        # Button container
+        button_frame = tk.Frame(main_frame, bg="white")
+        button_frame.pack(fill=tk.X)
+
+        # Play button (Mac-style rounded)
         self._play_btn = tk.Button(
-            main_frame,
+            button_frame,
             text="Play",
             command=self._on_play,
             bg="#007AFF",
             fg="white",
-            font=("SF Pro Text", 14, "bold"),
+            font=("SF Pro Text", 13),
             relief=tk.FLAT,
             bd=0,
             highlightthickness=0,
-            padx=30,
-            pady=10,
+            padx=40,
+            pady=8,
             activebackground="#0051D5",
             activeforeground="white",
             state=tk.DISABLED,  # Initially disabled
         )
-        self._play_btn.pack()
+        self._play_btn.pack(side=tk.RIGHT)
 
         # Stop button (initially hidden)
         self._stop_btn = tk.Button(
-            main_frame,
+            button_frame,
             text="Stop",
             command=self._on_stop,
             bg="#FF3B30",  # macOS red
             fg="white",
-            font=("SF Pro Text", 14, "bold"),
+            font=("SF Pro Text", 13),
             relief=tk.FLAT,
             bd=0,
             highlightthickness=0,
-            padx=30,
-            pady=10,
+            padx=40,
+            pady=8,
             activebackground="#D32F2F",
             activeforeground="white",
         )
@@ -167,7 +183,7 @@ class InputWindow:
         # Update button visibility
         self._is_playing = True
         self._play_btn.pack_forget()
-        self._stop_btn.pack()
+        self._stop_btn.pack(side=tk.RIGHT)
 
         # Call callback with text
         self._callback(text)
@@ -177,7 +193,7 @@ class InputWindow:
         # Update button visibility
         self._is_playing = False
         self._stop_btn.pack_forget()
-        self._play_btn.pack()
+        self._play_btn.pack(side=tk.RIGHT)
 
         # Re-enable play button if there's text
         text = self._text_area.get("1.0", tk.END).strip()
@@ -197,10 +213,10 @@ class InputWindow:
         self._is_playing = is_playing
         if is_playing:
             self._play_btn.pack_forget()
-            self._stop_btn.pack()
+            self._stop_btn.pack(side=tk.RIGHT)
         else:
             self._stop_btn.pack_forget()
-            self._play_btn.pack()
+            self._play_btn.pack(side=tk.RIGHT)
 
     def show(self):
         """Display the window."""
