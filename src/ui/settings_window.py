@@ -27,7 +27,8 @@ class SettingsWindow:
         # Create window
         self._window = tk.Toplevel()
         self._window.title("Settings")
-        self._window.geometry("500x400")
+        self._window.geometry("500x250")
+        self._window.resizable(False, False)
         self._window.lift()
         self._window.attributes('-topmost', True)
         self._window.after_idle(self._window.attributes, '-topmost', False)
@@ -51,53 +52,87 @@ class SettingsWindow:
     def _create_widgets(self):
         """Create all window widgets."""
         # Main frame with padding
-        main_frame = tk.Frame(self._window, padx=20, pady=20)
+        main_frame = tk.Frame(self._window, padx=25, pady=25, bg="#f5f5f7")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Voice selection
-        voice_label = tk.Label(main_frame, text="Voice:", anchor="w")
-        voice_label.grid(row=0, column=0, sticky="w", pady=(0, 5))
+        voice_label = tk.Label(
+            main_frame,
+            text="Voice:",
+            font=("SF Pro Text", 12),
+            fg="#1d1d1f",
+            bg="#f5f5f7",
+            anchor="w",
+        )
+        voice_label.grid(row=0, column=0, sticky="w", pady=(0, 8))
 
         voice_combo = ttk.Combobox(
             main_frame,
             textvariable=self._voice_var,
             values=self._available_voices,
             state="readonly",
-            width=40,
+            font=("SF Pro Text", 12),
+            width=35,
         )
         voice_combo.grid(row=0, column=1, columnspan=2, sticky="ew", pady=(0, 15))
 
         # Output directory
-        output_label = tk.Label(main_frame, text="Output Directory:", anchor="w")
-        output_label.grid(row=1, column=0, sticky="w", pady=(0, 5))
+        output_label = tk.Label(
+            main_frame,
+            text="Output Directory:",
+            font=("SF Pro Text", 12),
+            fg="#1d1d1f",
+            bg="#f5f5f7",
+            anchor="w",
+        )
+        output_label.grid(row=1, column=0, sticky="w", pady=(0, 8))
 
-        output_entry = tk.Entry(main_frame, textvariable=self._output_dir_var, width=35)
+        output_entry = tk.Entry(
+            main_frame,
+            textvariable=self._output_dir_var,
+            font=("SF Pro Text", 12),
+            relief=tk.SOLID,
+            bd=1,
+            highlightthickness=0,
+        )
         output_entry.grid(row=1, column=1, sticky="ew", pady=(0, 15))
 
         browse_btn = tk.Button(
-            main_frame, text="Browse...", command=self._browse_directory
+            main_frame,
+            text="Browse...",
+            command=self._browse_directory,
+            font=("SF Pro Text", 11),
+            relief=tk.FLAT,
+            bd=0,
+            bg="#e5e5ea",
+            fg="#1d1d1f",
+            padx=15,
+            pady=5,
         )
-        browse_btn.grid(row=1, column=2, padx=(5, 0), pady=(0, 15))
+        browse_btn.grid(row=1, column=2, padx=(8, 0), pady=(0, 15))
 
         # Configure grid weights
         main_frame.columnconfigure(1, weight=1)
 
         # Button frame
-        button_frame = tk.Frame(main_frame)
-        button_frame.grid(row=2, column=0, columnspan=3, pady=(20, 0))
+        button_frame = tk.Frame(main_frame, bg="#f5f5f7")
+        button_frame.grid(row=2, column=0, columnspan=3, pady=(15, 0))
 
-        # Save button (larger, more prominent)
+        # Save button (Mac-style accent button)
         save_btn = tk.Button(
             button_frame,
             text="Save",
             command=self._on_save,
-            bg="#007AFF",  # macOS blue
+            bg="#007AFF",
             fg="white",
-            font=("System", 13, "bold"),
-            width=12,
-            height=2,
+            font=("SF Pro Text", 13, "bold"),
             relief=tk.FLAT,
-            cursor="hand2",
+            bd=0,
+            highlightthickness=0,
+            padx=30,
+            pady=8,
+            activebackground="#0051D5",
+            activeforeground="white",
         )
         save_btn.pack(side=tk.LEFT, padx=5)
 
@@ -106,10 +141,14 @@ class SettingsWindow:
             button_frame,
             text="Cancel",
             command=self._on_cancel,
-            width=12,
-            height=2,
+            font=("SF Pro Text", 13),
             relief=tk.FLAT,
-            cursor="hand2",
+            bd=0,
+            highlightthickness=0,
+            bg="#e5e5ea",
+            fg="#1d1d1f",
+            padx=30,
+            pady=8,
         )
         cancel_btn.pack(side=tk.LEFT, padx=5)
 
