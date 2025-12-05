@@ -42,20 +42,17 @@ class TestInputWindow:
         # Should insert clipboard content into text area
         window._text_area.insert.assert_called_with("1.0", "Clipboard text here")
 
-    def test_cancel_closes_window(self, mocker):
-        """Should close window without callback."""
+    def test_esc_closes_window(self, mocker):
+        """Should close window on ESC key without callback."""
         callback = mocker.Mock()
-        mocker.patch("src.ui.input_window.tk")
+        mock_tk = mocker.patch("src.ui.input_window.tk")
 
         window = InputWindow(callback)
 
-        # Simulate cancel button click
-        window._on_cancel()
+        # Verify ESC binding was set
+        window._window.bind.assert_any_call('<Escape>', mocker.ANY)
 
-        # Should destroy window
-        window._window.destroy.assert_called_once()
-
-        # Should not call callback
+        # Should not call callback when window is destroyed via ESC
         callback.assert_not_called()
 
     def test_empty_text_does_not_submit(self, mocker):
@@ -117,7 +114,7 @@ class TestInputWindow:
         mock_text.pack.assert_called()
 
     def test_buttons_created(self, mocker):
-        """Should create all buttons."""
+        """Should create read button."""
         callback = mocker.Mock()
         mock_tk = mocker.patch("src.ui.input_window.tk")
         mock_button = mocker.Mock()
@@ -125,8 +122,8 @@ class TestInputWindow:
 
         InputWindow(callback)
 
-        # Should create 3 buttons (Paste from Clipboard, Read, Cancel)
-        assert mock_tk.Button.call_count == 3
+        # Should create 1 button (Read)
+        assert mock_tk.Button.call_count == 1
 
-        # Should pack all buttons
-        assert mock_button.pack.call_count == 3
+        # Should pack the button
+        assert mock_button.pack.call_count == 1

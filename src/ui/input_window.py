@@ -26,6 +26,12 @@ class InputWindow:
         self._window.attributes('-topmost', True)
         self._window.after_idle(self._window.attributes, '-topmost', False)
 
+        # Bind ESC key to close window
+        self._window.bind('<Escape>', lambda e: self._window.destroy())
+
+        # Bind Cmd+V to paste (macOS)
+        self._window.bind('<Command-v>', lambda e: self._on_paste_clipboard())
+
         # Create UI elements
         self._create_widgets()
         logger.debug("input_window_created")
@@ -53,33 +59,20 @@ class InputWindow:
         button_frame = tk.Frame(self._window)
         button_frame.pack(pady=10)
 
-        # Paste from Clipboard button
-        paste_btn = tk.Button(
-            button_frame,
-            text="Paste from Clipboard",
-            command=self._on_paste_clipboard,
-        )
-        paste_btn.pack(side=tk.LEFT, padx=5)
-
-        # Read button
+        # Read button (larger, more prominent)
         read_btn = tk.Button(
             button_frame,
             text="Read",
             command=self._on_submit,
-            bg="#4CAF50",
+            bg="#007AFF",  # macOS blue
             fg="white",
-            width=10,
+            font=("System", 14, "bold"),
+            width=15,
+            height=2,
+            relief=tk.FLAT,
+            cursor="hand2",
         )
-        read_btn.pack(side=tk.LEFT, padx=5)
-
-        # Cancel button
-        cancel_btn = tk.Button(
-            button_frame,
-            text="Cancel",
-            command=self._on_cancel,
-            width=10,
-        )
-        cancel_btn.pack(side=tk.LEFT, padx=5)
+        read_btn.pack()
 
     def _on_paste_clipboard(self):
         """Paste clipboard content to text area."""
@@ -102,10 +95,6 @@ class InputWindow:
         self._callback(text)
 
         # Close window
-        self._window.destroy()
-
-    def _on_cancel(self):
-        """Cancel and close window."""
         self._window.destroy()
 
     def show(self):
