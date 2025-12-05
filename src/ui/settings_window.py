@@ -28,6 +28,9 @@ class SettingsWindow:
         self._window = tk.Toplevel()
         self._window.title("Settings")
 
+        # Remove window decorations for cleaner look (must be before geometry)
+        self._window.overrideredirect(True)
+
         # Position window in top-right corner (same as input window)
         window_width = 480
         window_height = 260
@@ -45,9 +48,6 @@ class SettingsWindow:
         self._window.lift()
         self._window.attributes('-topmost', True)
         self._window.after_idle(self._window.attributes, '-topmost', False)
-
-        # Remove window decorations for cleaner look
-        self._window.overrideredirect(True)
 
         # Variables for form fields
         self._voice_var = tk.StringVar()

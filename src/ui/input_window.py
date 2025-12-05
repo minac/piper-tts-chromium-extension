@@ -29,6 +29,9 @@ class InputWindow:
         self._window = tk.Toplevel()
         self._window.title("Piper TTS Reader")
 
+        # Remove window decorations for cleaner look (must be before geometry)
+        self._window.overrideredirect(True)
+
         # Position window in top-right corner
         window_width = 420
         window_height = 240
@@ -45,9 +48,6 @@ class InputWindow:
         self._window.lift()
         self._window.attributes('-topmost', True)
         self._window.after_idle(self._window.attributes, '-topmost', False)
-
-        # Remove window decorations for cleaner look
-        self._window.overrideredirect(True)
 
         # Bind ESC key to close window
         self._window.bind('<Escape>', lambda e: self._window.destroy())
