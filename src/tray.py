@@ -109,6 +109,7 @@ class TrayApplication:
                 "Play",
                 lambda icon, item: self._play_pause(icon, item),
                 visible=lambda _: not self._is_playing,
+                enabled=self._has_audio,
             ),
             MenuItem(
                 "Stop",
