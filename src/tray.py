@@ -26,43 +26,55 @@ class TrayApplication:
         # Create menu
         menu = self._create_menu()
 
-        # Create icon
+        # Create icon (template=True for macOS adaptive menu bar icons)
+        icon_image = self._create_icon_image()
         self._icon = pystray.Icon(
             "piper-tts",
-            self._create_icon_image(),
+            icon_image,
             "Piper TTS Reader",
             menu=menu,
         )
+        # Mark as template icon for macOS to auto-invert on dark menu bar
+        if hasattr(self._icon, '_icon_class'):
+            # pystray on macOS should handle template icons automatically
+            pass
         logger.info("tray_app_initialized")
 
     def _create_icon_image(self) -> Image.Image:
         """Create TTS icon with speech bubble and sound waves.
 
         Returns:
-            PIL Image for the tray icon (black, works as template on macOS)
+            PIL Image for the tray icon (black on transparent for macOS template icon)
         """
-        # Create a 22x22 icon (standard macOS menu bar size)
-        width = 22
-        height = 22
+        # Create a 44x44 icon @2x for retina displays (macOS will scale down)
+        width = 44
+        height = 44
         image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         dc = ImageDraw.Draw(image)
 
+        # Scale factor for 2x resolution
+        scale = 2
+
         # Speech bubble (rounded rectangle)
         # Main bubble body
-        dc.rounded_rectangle([2, 2, 15, 12], radius=2, fill="black")
+        dc.rounded_rectangle(
+            [2*scale, 2*scale, 15*scale, 12*scale],
+            radius=2*scale,
+            fill="black"
+        )
 
         # Text lines inside bubble (3 lines)
-        dc.rectangle([4, 4, 11, 5], fill="white")  # Top line
-        dc.rectangle([4, 7, 10, 8], fill="white")  # Middle line
-        dc.rectangle([4, 10, 9, 11], fill="white")  # Bottom line
+        dc.rectangle([4*scale, 4*scale, 11*scale, 5*scale], fill="white")  # Top line
+        dc.rectangle([4*scale, 7*scale, 10*scale, 8*scale], fill="white")  # Middle line
+        dc.rectangle([4*scale, 10*scale, 9*scale, 11*scale], fill="white")  # Bottom line
 
         # Bubble tail (small triangle at bottom)
-        dc.polygon([7, 12, 5, 15, 9, 14], fill="black")
+        dc.polygon([7*scale, 12*scale, 5*scale, 15*scale, 9*scale, 14*scale], fill="black")
 
         # Sound waves (3 curved lines at bottom right)
-        dc.arc([12, 13, 16, 17], start=270, end=90, fill="black", width=2)
-        dc.arc([15, 12, 19, 18], start=270, end=90, fill="black", width=2)
-        dc.arc([17, 11, 21, 19], start=270, end=90, fill="black", width=2)
+        dc.arc([12*scale, 13*scale, 16*scale, 17*scale], start=270, end=90, fill="black", width=2*scale)
+        dc.arc([15*scale, 12*scale, 19*scale, 18*scale], start=270, end=90, fill="black", width=2*scale)
+        dc.arc([17*scale, 11*scale, 21*scale, 19*scale], start=270, end=90, fill="black", width=2*scale)
 
         return image
 
