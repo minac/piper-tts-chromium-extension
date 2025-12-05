@@ -91,6 +91,8 @@ class InputWindow:
             height=4,
         )
         self._text_area.pack(fill=tk.BOTH, expand=True)
+        # Bind text change events to update button state
+        self._text_area.bind("<<Modified>>", self._on_text_change)
         # Focus the text area so cursor blinks
         self._text_area.focus_set()
 
@@ -109,6 +111,7 @@ class InputWindow:
             pady=10,
             activebackground="#0051D5",
             activeforeground="white",
+            state=tk.DISABLED,  # Initially disabled
         )
         self._play_btn.pack()
 
@@ -129,6 +132,20 @@ class InputWindow:
             activeforeground="white",
         )
         # Don't pack initially - will show based on state
+
+    def _on_text_change(self, event=None):
+        """Handle text area changes to enable/disable Play button."""
+        # Reset the modified flag
+        if self._text_area.edit_modified():
+            self._text_area.edit_modified(False)
+
+            # Only update button state if not playing
+            if not self._is_playing:
+                text = self._text_area.get("1.0", tk.END).strip()
+                if text:
+                    self._play_btn.config(state=tk.NORMAL)
+                else:
+                    self._play_btn.config(state=tk.DISABLED)
 
     def _on_paste_clipboard(self):
         """Paste clipboard content to text area."""
@@ -161,6 +178,11 @@ class InputWindow:
         self._is_playing = False
         self._stop_btn.pack_forget()
         self._play_btn.pack()
+
+        # Re-enable play button if there's text
+        text = self._text_area.get("1.0", tk.END).strip()
+        if text:
+            self._play_btn.config(state=tk.NORMAL)
 
         # Call stop callback if provided
         if self._stop_callback:

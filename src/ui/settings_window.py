@@ -27,7 +27,20 @@ class SettingsWindow:
         # Create window
         self._window = tk.Toplevel()
         self._window.title("Settings")
-        self._window.geometry("500x250")
+
+        # Position window in top-right corner (same as input window)
+        window_width = 500
+        window_height = 250
+
+        # Update to get screen dimensions
+        self._window.update_idletasks()
+        screen_width = self._window.winfo_screenwidth()
+
+        # Position very close to top-right (10px from right edge, 40px from top for menu bar)
+        x_position = screen_width - window_width - 10
+        y_position = 40
+
+        self._window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
         self._window.resizable(False, False)
         self._window.lift()
         self._window.attributes('-topmost', True)
