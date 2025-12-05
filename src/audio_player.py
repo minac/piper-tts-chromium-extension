@@ -101,15 +101,27 @@ class AudioPlayer:
 
     def pause(self) -> None:
         """Pause playback without losing position"""
+        # Get stream reference and update state while holding lock
+        stream_to_stop = None
+        position = 0
         with self._lock:
             if self._state != PlaybackState.PLAYING:
                 return
 
             if self._stream is not None:
-                self._stream.stop()
+                stream_to_stop = self._stream
 
             self._state = PlaybackState.PAUSED
-            logger.info(f"Paused playback at position {self._position}")
+            position = self._position
+
+        # Stop stream outside the lock to avoid deadlock
+        if stream_to_stop is not None:
+            try:
+                stream_to_stop.stop()
+            except Exception as e:
+                logger.warning("error_stopping_stream_on_pause", error=str(e))
+
+        logger.info(f"Paused playback at position {position}")
 
     def resume(self) -> None:
         """Resume playback from pause position"""
@@ -125,15 +137,24 @@ class AudioPlayer:
 
     def stop(self) -> None:
         """Stop playback and reset position"""
+        # Get stream reference while holding lock
+        old_stream = None
         with self._lock:
             if self._stream is not None:
-                self._stream.stop()
-                self._stream.close()
+                old_stream = self._stream
                 self._stream = None
-
             self._state = PlaybackState.STOPPED
             self._position = 0
-            logger.info("Stopped playback")
+
+        # Close stream outside the lock to avoid deadlock
+        if old_stream is not None:
+            try:
+                old_stream.stop()
+                old_stream.close()
+            except Exception as e:
+                logger.warning("error_closing_stream_on_stop", error=str(e))
+
+        logger.info("Stopped playback")
 
     def set_speed(self, speed: float) -> None:
         """
