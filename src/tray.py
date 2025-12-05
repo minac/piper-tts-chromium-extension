@@ -37,10 +37,10 @@ class TrayApplication:
         logger.info("tray_app_initialized")
 
     def _create_icon_image(self) -> Image.Image:
-        """Create a colorful icon image for macOS menu bar (like Tot).
+        """Create TTS icon with speech bubble and sound waves.
 
         Returns:
-            PIL Image for the tray icon (colorful, visible on any background)
+            PIL Image for the tray icon (black, works as template on macOS)
         """
         # Create a 22x22 icon (standard macOS menu bar size)
         width = 22
@@ -48,18 +48,22 @@ class TrayApplication:
         image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         dc = ImageDraw.Draw(image)
 
-        # Colorful circular icon with blue/gradient (like Tot)
-        # Main circle - bright blue
-        dc.ellipse([3, 3, 19, 19], fill="#007AFF", outline="#0051D5")
+        # Speech bubble (rounded rectangle)
+        # Main bubble body
+        dc.rounded_rectangle([2, 2, 15, 12], radius=2, fill="black")
 
-        # Simple speaker/sound icon inside
-        # Speaker body (white)
-        dc.rectangle([7, 9, 9, 13], fill="white")
-        # Speaker cone (white triangle)
-        dc.polygon([9, 9, 12, 7, 12, 15, 9, 13], fill="white")
-        # Sound waves (white)
-        dc.arc([13, 8, 15, 10], start=270, end=90, fill="white", width=1)
-        dc.arc([14, 7, 16, 11], start=270, end=90, fill="white", width=1)
+        # Text lines inside bubble (3 lines)
+        dc.rectangle([4, 4, 11, 5], fill="white")  # Top line
+        dc.rectangle([4, 7, 10, 8], fill="white")  # Middle line
+        dc.rectangle([4, 10, 9, 11], fill="white")  # Bottom line
+
+        # Bubble tail (small triangle at bottom)
+        dc.polygon([7, 12, 5, 15, 9, 14], fill="black")
+
+        # Sound waves (3 curved lines at bottom right)
+        dc.arc([12, 13, 16, 17], start=270, end=90, fill="black", width=2)
+        dc.arc([15, 12, 19, 18], start=270, end=90, fill="black", width=2)
+        dc.arc([17, 11, 21, 19], start=270, end=90, fill="black", width=2)
 
         return image
 
