@@ -79,12 +79,30 @@ class TrayApplication:
             MenuItem(
                 "Speed",
                 Menu(
-                    MenuItem("0.5x", lambda: self._change_speed(None, None, 0.5)),
-                    MenuItem("0.75x", lambda: self._change_speed(None, None, 0.75)),
-                    MenuItem("1.0x", lambda: self._change_speed(None, None, 1.0)),
-                    MenuItem("1.25x", lambda: self._change_speed(None, None, 1.25)),
-                    MenuItem("1.5x", lambda: self._change_speed(None, None, 1.5)),
-                    MenuItem("2.0x", lambda: self._change_speed(None, None, 2.0)),
+                    MenuItem(
+                        lambda _: "✓ 0.5x" if self._speed == 0.5 else "0.5x",
+                        lambda: self._change_speed(None, None, 0.5),
+                    ),
+                    MenuItem(
+                        lambda _: "✓ 0.75x" if self._speed == 0.75 else "0.75x",
+                        lambda: self._change_speed(None, None, 0.75),
+                    ),
+                    MenuItem(
+                        lambda _: "✓ 1.0x" if self._speed == 1.0 else "1.0x",
+                        lambda: self._change_speed(None, None, 1.0),
+                    ),
+                    MenuItem(
+                        lambda _: "✓ 1.25x" if self._speed == 1.25 else "1.25x",
+                        lambda: self._change_speed(None, None, 1.25),
+                    ),
+                    MenuItem(
+                        lambda _: "✓ 1.5x" if self._speed == 1.5 else "1.5x",
+                        lambda: self._change_speed(None, None, 1.5),
+                    ),
+                    MenuItem(
+                        lambda _: "✓ 2.0x" if self._speed == 2.0 else "2.0x",
+                        lambda: self._change_speed(None, None, 2.0),
+                    ),
                 ),
             ),
             MenuItem(

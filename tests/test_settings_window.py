@@ -25,23 +25,18 @@ class TestSettingsWindow:
         assert "values" in call_kwargs
         assert call_kwargs["values"] == voices
 
-    def test_speed_scale_created(self, mocker):
-        """Should create speed scale widget."""
+    def test_voice_combobox_created(self, mocker):
+        """Should create voice combobox widget."""
         mock_settings = mocker.Mock()
-        mock_settings.get.return_value = 1.0
+        mock_settings.get.return_value = "voice1"
 
         mocker.patch("src.ui.settings_window.tk")
         mock_ttk = mocker.patch("src.ui.settings_window.ttk")
 
         SettingsWindow(mock_settings, ["voice1"])
 
-        # Should create Scale widget
-        mock_ttk.Scale.assert_called()
-        call_kwargs = mock_ttk.Scale.call_args[1]
-        assert "from_" in call_kwargs
-        assert "to" in call_kwargs
-        assert call_kwargs["from_"] == 0.5
-        assert call_kwargs["to"] == 2.0
+        # Should create Combobox widget
+        mock_ttk.Combobox.assert_called()
 
     def test_save_updates_settings(self, mocker):
         """Should save changes to settings."""
@@ -59,14 +54,13 @@ class TestSettingsWindow:
 
         # Mock new values
         window._voice_var.get.return_value = "en_US-amy-low"
-        window._speed_var.get.return_value = 1.5
         window._output_dir_var.get.return_value = "~/Music"
 
         # Simulate save button click
         window._on_save()
 
-        # Should update settings
-        assert mock_settings.set.call_count >= 3
+        # Should update settings (voice and output_directory only, speed via tray)
+        assert mock_settings.set.call_count == 2
         mock_settings.save.assert_called_once()
 
     def test_cancel_closes_without_saving(self, mocker):
@@ -165,16 +159,12 @@ class TestSettingsWindow:
 
         window = SettingsWindow(mock_settings, ["en_US-lessac-medium", "en_US-amy-low"])
 
-        # Should have called get for each setting
-        assert mock_settings.get.call_count >= 3
+        # Should have called get for each setting (voice and output_directory)
+        assert mock_settings.get.call_count == 2
 
         # Check that voice variable was set (appears in call_args_list)
         voice_calls = [call for call in window._voice_var.set.call_args_list]
         assert any(call[0][0] == "en_US-amy-low" for call in voice_calls)
-
-        # Check that speed variable was set
-        speed_calls = [call for call in window._speed_var.set.call_args_list]
-        assert any(call[0][0] == 1.5 for call in speed_calls)
 
         # Check that output directory variable was set
         output_calls = [call for call in window._output_dir_var.set.call_args_list]

@@ -34,7 +34,6 @@ class SettingsWindow:
 
         # Variables for form fields
         self._voice_var = tk.StringVar()
-        self._speed_var = tk.DoubleVar()
         self._output_dir_var = tk.StringVar()
 
         # Load current settings
@@ -47,7 +46,6 @@ class SettingsWindow:
     def _load_settings(self):
         """Load current settings into variables."""
         self._voice_var.set(self._settings.get("voice"))
-        self._speed_var.set(self._settings.get("speed"))
         self._output_dir_var.set(self._settings.get("output_directory"))
 
     def _create_widgets(self):
@@ -69,57 +67,49 @@ class SettingsWindow:
         )
         voice_combo.grid(row=0, column=1, columnspan=2, sticky="ew", pady=(0, 15))
 
-        # Speed selection
-        speed_label = tk.Label(main_frame, text="Speed:", anchor="w")
-        speed_label.grid(row=1, column=0, sticky="w", pady=(0, 5))
-
-        speed_scale = ttk.Scale(
-            main_frame,
-            from_=0.5,
-            to=2.0,
-            variable=self._speed_var,
-            orient=tk.HORIZONTAL,
-        )
-        speed_scale.grid(row=1, column=1, columnspan=2, sticky="ew", pady=(0, 5))
-
-        speed_value_label = tk.Label(
-            main_frame, textvariable=self._speed_var, width=5
-        )
-        speed_value_label.grid(row=2, column=1, sticky="w", pady=(0, 15))
-
         # Output directory
         output_label = tk.Label(main_frame, text="Output Directory:", anchor="w")
-        output_label.grid(row=3, column=0, sticky="w", pady=(0, 5))
+        output_label.grid(row=1, column=0, sticky="w", pady=(0, 5))
 
         output_entry = tk.Entry(main_frame, textvariable=self._output_dir_var, width=35)
-        output_entry.grid(row=3, column=1, sticky="ew", pady=(0, 15))
+        output_entry.grid(row=1, column=1, sticky="ew", pady=(0, 15))
 
         browse_btn = tk.Button(
             main_frame, text="Browse...", command=self._browse_directory
         )
-        browse_btn.grid(row=3, column=2, padx=(5, 0), pady=(0, 15))
+        browse_btn.grid(row=1, column=2, padx=(5, 0), pady=(0, 15))
 
         # Configure grid weights
         main_frame.columnconfigure(1, weight=1)
 
         # Button frame
         button_frame = tk.Frame(main_frame)
-        button_frame.grid(row=4, column=0, columnspan=3, pady=(20, 0))
+        button_frame.grid(row=2, column=0, columnspan=3, pady=(20, 0))
 
-        # Save button
+        # Save button (larger, more prominent)
         save_btn = tk.Button(
             button_frame,
             text="Save",
             command=self._on_save,
-            bg="#4CAF50",
+            bg="#007AFF",  # macOS blue
             fg="white",
-            width=10,
+            font=("System", 13, "bold"),
+            width=12,
+            height=2,
+            relief=tk.FLAT,
+            cursor="hand2",
         )
         save_btn.pack(side=tk.LEFT, padx=5)
 
         # Cancel button
         cancel_btn = tk.Button(
-            button_frame, text="Cancel", command=self._on_cancel, width=10
+            button_frame,
+            text="Cancel",
+            command=self._on_cancel,
+            width=12,
+            height=2,
+            relief=tk.FLAT,
+            cursor="hand2",
         )
         cancel_btn.pack(side=tk.LEFT, padx=5)
 
@@ -134,9 +124,8 @@ class SettingsWindow:
 
     def _on_save(self):
         """Save settings and close."""
-        # Update settings
+        # Update settings (speed is managed via tray menu now)
         self._settings.set("voice", self._voice_var.get())
-        self._settings.set("speed", self._speed_var.get())
         self._settings.set("output_directory", self._output_dir_var.get())
 
         # Save to file
