@@ -37,25 +37,27 @@ class TrayApplication:
         logger.info("tray_app_initialized")
 
     def _create_icon_image(self) -> Image.Image:
-        """Create a simple icon image.
+        """Create a simple icon image for macOS menu bar.
 
         Returns:
-            PIL Image for the tray icon
+            PIL Image for the tray icon (template style for macOS)
         """
-        # Create a simple 64x64 icon with a speaker symbol
-        width = 64
-        height = 64
-        image = Image.new("RGB", (width, height), "white")
+        # Create a 22x22 icon (standard macOS menu bar size)
+        # Use RGBA with transparency for proper macOS template rendering
+        width = 22
+        height = 22
+        image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         dc = ImageDraw.Draw(image)
 
-        # Draw a simple speaker shape
-        # Rectangle (speaker body)
-        dc.rectangle([10, 20, 25, 44], fill="black")
-        # Triangle (speaker cone)
-        dc.polygon([25, 20, 40, 10, 40, 54, 25, 44], fill="black")
-        # Sound waves
-        dc.arc([42, 24, 54, 40], start=300, end=60, fill="black", width=2)
-        dc.arc([46, 20, 58, 44], start=300, end=60, fill="black", width=2)
+        # Simple speaker icon that works in light/dark mode
+        # Speaker body (small rectangle on left)
+        dc.rectangle([2, 7, 6, 15], fill="black")
+        # Speaker cone (trapezoid)
+        dc.polygon([6, 7, 11, 4, 11, 18, 6, 15], fill="black")
+        # Sound waves (three curved lines)
+        dc.arc([13, 6, 17, 10], start=270, end=90, fill="black", width=2)
+        dc.arc([15, 4, 19, 12], start=270, end=90, fill="black", width=2)
+        dc.arc([17, 2, 21, 14], start=270, end=90, fill="black", width=2)
 
         return image
 
