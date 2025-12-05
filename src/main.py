@@ -275,7 +275,7 @@ class PiperTTSApp:
         self._tray_app._sample_rate = sample_rate
 
         # Play
-        self._audio_player.play(audio_data, sample_rate, speed)
+        self._audio_player.play(audio_data)
         self._tray_app._is_playing = True
         self._tray_app._is_paused = False
 
