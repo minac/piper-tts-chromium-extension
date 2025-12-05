@@ -36,13 +36,18 @@ class InputWindow:
         # Remove window decorations for cleaner look (must be before geometry)
         self._window.overrideredirect(True)
 
-        # Position window in top-right corner
-        window_width = 420
-        window_height = 280
+        # Create UI first to calculate natural size
+        self._create_widgets()
 
-        # Update to get screen dimensions
+        # Update to get natural dimensions
         self._window.update_idletasks()
+
+        # Get screen dimensions for positioning
         screen_width = self._window.winfo_screenwidth()
+
+        # Get the natural size of the window
+        window_width = self._window.winfo_reqwidth()
+        window_height = self._window.winfo_reqheight()
 
         # Position very close to top-right (10px from right edge, 40px from top for menu bar)
         x_position = screen_width - window_width - 10
@@ -53,19 +58,25 @@ class InputWindow:
         self._window.attributes('-topmost', True)
         self._window.after_idle(self._window.attributes, '-topmost', False)
 
+        # macOS rounded corners (requires custom background)
+        try:
+            self._window.attributes('-transparent', True)
+            self._window.config(bg='systemTransparent')
+        except tk.TclError:
+            # Fallback if transparent not supported
+            pass
+
         # Bind ESC key to close window
         self._window.bind('<Escape>', lambda e: self._window.destroy())
 
         # Bind Cmd+V to paste (macOS)
         self._window.bind('<Command-v>', lambda e: self._on_paste_clipboard())
 
-        # Create UI elements
-        self._create_widgets()
         logger.debug("input_window_created")
 
     def _create_widgets(self):
         """Create all window widgets."""
-        # Container with rounded corners and shadow effect
+        # Container with border and rounded corners effect
         container = tk.Frame(
             self._window,
             bg="white",
@@ -73,6 +84,9 @@ class InputWindow:
             highlightthickness=1,
         )
         container.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
+
+        # Set minimum width for text area
+        container.config(width=420)
 
         # Main frame with padding
         main_frame = tk.Frame(container, padx=18, pady=18, bg="white")

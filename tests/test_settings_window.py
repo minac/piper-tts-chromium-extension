@@ -93,8 +93,10 @@ class TestSettingsWindow:
         mock_window = mocker.Mock()
         mock_tk.Toplevel.return_value = mock_window
 
-        # Mock screen width for positioning calculation
+        # Mock dimensions for positioning calculation
         mock_window.winfo_screenwidth.return_value = 1920
+        mock_window.winfo_reqwidth.return_value = 480
+        mock_window.winfo_reqheight.return_value = 320
 
         SettingsWindow(mock_settings, ["voice1"])
 

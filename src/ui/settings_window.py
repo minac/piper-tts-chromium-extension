@@ -31,13 +31,26 @@ class SettingsWindow:
         # Remove window decorations for cleaner look (must be before geometry)
         self._window.overrideredirect(True)
 
-        # Position window in top-right corner (same as input window)
-        window_width = 480
-        window_height = 320
+        # Variables for form fields (must be before _create_widgets)
+        self._voice_var = tk.StringVar()
+        self._speed_var = tk.DoubleVar()
+        self._output_dir_var = tk.StringVar()
 
-        # Update to get screen dimensions
+        # Load current settings
+        self._load_settings()
+
+        # Create UI first to calculate natural size
+        self._create_widgets()
+
+        # Update to get natural dimensions
         self._window.update_idletasks()
+
+        # Get screen dimensions for positioning
         screen_width = self._window.winfo_screenwidth()
+
+        # Get the natural size of the window
+        window_width = self._window.winfo_reqwidth()
+        window_height = self._window.winfo_reqheight()
 
         # Position very close to top-right (10px from right edge, 40px from top for menu bar)
         x_position = screen_width - window_width - 10
@@ -49,16 +62,14 @@ class SettingsWindow:
         self._window.attributes('-topmost', True)
         self._window.after_idle(self._window.attributes, '-topmost', False)
 
-        # Variables for form fields
-        self._voice_var = tk.StringVar()
-        self._speed_var = tk.DoubleVar()
-        self._output_dir_var = tk.StringVar()
+        # macOS rounded corners (requires custom background)
+        try:
+            self._window.attributes('-transparent', True)
+            self._window.config(bg='systemTransparent')
+        except tk.TclError:
+            # Fallback if transparent not supported
+            pass
 
-        # Load current settings
-        self._load_settings()
-
-        # Create UI
-        self._create_widgets()
         logger.debug("settings_window_created")
 
     def _load_settings(self):
@@ -69,7 +80,7 @@ class SettingsWindow:
 
     def _create_widgets(self):
         """Create all window widgets."""
-        # Container with border
+        # Container with border and rounded corners effect
         container = tk.Frame(
             self._window,
             bg="white",
@@ -77,6 +88,9 @@ class SettingsWindow:
             highlightthickness=1,
         )
         container.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
+
+        # Set minimum width for controls
+        container.config(width=480)
 
         # Main frame with padding
         main_frame = tk.Frame(container, padx=20, pady=20, bg="white")
