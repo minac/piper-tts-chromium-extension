@@ -1,11 +1,9 @@
 """System tray application with menu bar icon."""
 
 
-import os
-
 import numpy as np
 import pystray
-from PIL import Image
+from PIL import Image, ImageDraw
 from pystray import Menu, MenuItem
 
 from src.logger import get_logger
@@ -43,22 +41,32 @@ class TrayApplication:
         logger.info("tray_app_initialized")
 
     def _create_icon_image(self) -> Image.Image:
-        """Load TTS icon from PNG file with transparency preserved.
+        """Create monochrome speaker icon for macOS menu bar.
 
         Returns:
-            PIL Image for the tray icon (colored with alpha channel)
+            PIL Image for the tray icon (black on transparent, macOS template style)
         """
-        # Get path to PNG icon (relative to this file)
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        png_path = os.path.join(os.path.dirname(current_dir), "assets", "sound.png")
+        # Create 44x44 image for retina displays
+        size = 44
+        image = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(image)
 
-        # Load PNG image and resize to menu bar size (44x44 for @2x)
-        image = Image.open(png_path)
-        image = image.resize((44, 44), Image.Resampling.LANCZOS)
+        # Speaker cone (trapezoid on left)
+        cone = [(12, 18), (18, 14), (18, 30), (12, 26)]
+        draw.polygon(cone, fill='black')
 
-        # Ensure RGBA mode for proper transparency
-        if image.mode != 'RGBA':
-            image = image.convert('RGBA')
+        # Speaker body (small rectangle)
+        draw.rectangle([8, 20, 12, 24], fill='black')
+
+        # Sound waves (3 arcs on right side)
+        # Wave 1 (closest)
+        draw.arc([20, 16, 28, 28], start=300, end=60, fill='black', width=2)
+
+        # Wave 2 (middle)
+        draw.arc([24, 13, 32, 31], start=300, end=60, fill='black', width=2)
+
+        # Wave 3 (furthest)
+        draw.arc([28, 10, 36, 34], start=300, end=60, fill='black', width=2)
 
         return image
 
