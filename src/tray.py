@@ -41,32 +41,35 @@ class TrayApplication:
         logger.info("tray_app_initialized")
 
     def _create_icon_image(self) -> Image.Image:
-        """Create monochrome speaker icon for macOS menu bar.
+        """Create white speaker icon visible on dark menu bar.
 
         Returns:
-            PIL Image for the tray icon (black on transparent, macOS template style)
+            PIL Image for the tray icon (white on transparent)
         """
         # Create 44x44 image for retina displays
         size = 44
         image = Image.new('RGBA', (size, size), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
 
+        # Use white color for visibility on dark backgrounds
+        color = 'white'
+
         # Speaker cone (trapezoid on left)
         cone = [(12, 18), (18, 14), (18, 30), (12, 26)]
-        draw.polygon(cone, fill='black')
+        draw.polygon(cone, fill=color)
 
         # Speaker body (small rectangle)
-        draw.rectangle([8, 20, 12, 24], fill='black')
+        draw.rectangle([8, 20, 12, 24], fill=color)
 
         # Sound waves (3 arcs on right side)
         # Wave 1 (closest)
-        draw.arc([20, 16, 28, 28], start=300, end=60, fill='black', width=2)
+        draw.arc([20, 16, 28, 28], start=300, end=60, fill=color, width=2)
 
         # Wave 2 (middle)
-        draw.arc([24, 13, 32, 31], start=300, end=60, fill='black', width=2)
+        draw.arc([24, 13, 32, 31], start=300, end=60, fill=color, width=2)
 
         # Wave 3 (furthest)
-        draw.arc([28, 10, 36, 34], start=300, end=60, fill='black', width=2)
+        draw.arc([28, 10, 36, 34], start=300, end=60, fill=color, width=2)
 
         return image
 
