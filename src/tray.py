@@ -1,10 +1,15 @@
 """System tray application with menu bar icon."""
 
 
+import io
+import os
+
 import numpy as np
 import pystray
-from PIL import Image, ImageDraw
+from PIL import Image
 from pystray import Menu, MenuItem
+from reportlab.graphics import renderPM
+from svglib.svglib import svg2rlg
 
 from src.logger import get_logger
 
@@ -41,35 +46,26 @@ class TrayApplication:
         logger.info("tray_app_initialized")
 
     def _create_icon_image(self) -> Image.Image:
-        """Create TTS icon with speech bubble and sound waves.
+        """Create TTS icon from SVG tropical drink emoji.
 
         Returns:
-            PIL Image for the tray icon (black on transparent for macOS template icon)
+            PIL Image for the tray icon (tropical drink with lime and straw)
         """
-        # Create a 44x44 icon @2x for retina displays (macOS will scale down)
-        width = 44
-        height = 44
-        image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        dc = ImageDraw.Draw(image)
+        # Get path to SVG icon (relative to this file)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        svg_path = os.path.join(os.path.dirname(current_dir), "assets", "icon.svg")
 
-        # Scale factor for 2x resolution
-        scale = 2
+        # Convert SVG to reportlab drawing
+        drawing = svg2rlg(svg_path)
 
-        # Speech bubble (rounded rectangle)
-        # Main bubble body
-        dc.rounded_rectangle(
-            [2*scale, 2*scale, 15*scale, 12*scale],
-            radius=2*scale,
-            fill="black"
-        )
+        # Render to PNG in memory at menu bar size (44x44 for @2x)
+        png_data = io.BytesIO()
+        renderPM.drawToFile(drawing, png_data, fmt='PNG', dpi=72, bg=0x00000000)
+        png_data.seek(0)
 
-        # Text lines inside bubble (3 lines)
-        dc.rectangle([4*scale, 4*scale, 11*scale, 5*scale], fill="white")  # Top line
-        dc.rectangle([4*scale, 7*scale, 10*scale, 8*scale], fill="white")  # Middle line
-        dc.rectangle([4*scale, 10*scale, 9*scale, 11*scale], fill="white")  # Bottom line
-
-        # Bubble tail (small triangle at bottom)
-        dc.polygon([7*scale, 12*scale, 5*scale, 15*scale, 9*scale, 14*scale], fill="black")
+        # Load as PIL Image and resize to exact dimensions
+        image = Image.open(png_data)
+        image = image.resize((44, 44), Image.Resampling.LANCZOS)
 
         # Sound waves (3 curved lines at bottom right)
         dc.arc(
