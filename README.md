@@ -1,4 +1,4 @@
-# Piper TTS Menu Bar Reader
+# Speakeasy
 
 macOS menu bar application for reading text and URLs aloud using Piper TTS.
 
@@ -40,7 +40,7 @@ macOS menu bar application for reading text and URLs aloud using Piper TTS.
   - Speed submenu (0.5x - 2.0x)
   - Dynamic Play/Pause/Resume text
   - Conditional Download menu item
-  - Generated speaker icon
+  - SVG icon with macOS template support (auto-inverts on dark menu bar)
 - 🪟 UI Windows
   - Input window for text/URL entry
   - Settings window for configuration
@@ -75,8 +75,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ```bash
 # Clone repository
-git clone https://github.com/minac/piper-tts-chromium-extension.git
-cd piper-tts-chromium-extension
+git clone https://github.com/minac/speakeasy.git
+cd speakeasy
 
 # Install Python dependencies
 uv sync --extra dev
@@ -162,9 +162,10 @@ uv run ruff check --fix src/ tests/
 ## Project Structure
 
 ```
-piper-tts-chromium-extension/
+speakeasy/
 ├── src/
-│   ├── main.py              # Application entry point
+│   ├── main.py              # Application entry point & coordinator
+│   ├── logger.py            # Structured logging
 │   ├── tts_engine.py        # Piper TTS wrapper
 │   ├── audio_player.py      # Audio playback controller
 │   ├── text_extractor.py    # URL and text processing
@@ -186,9 +187,12 @@ piper-tts-chromium-extension/
 │   ├── test_input_window.py
 │   ├── test_settings_window.py
 │   └── conftest.py
+├── assets/
+│   └── icon.svg             # Menu bar icon (SVG)
 ├── voices/                  # Piper voice models (.onnx)
 ├── config.json             # User settings (auto-generated)
 ├── pyproject.toml          # Project metadata and dependencies
+├── CLAUDE.md               # Project instructions for Claude
 └── IMPLEMENTATION_PLAN.md  # Detailed implementation roadmap
 ```
 
@@ -253,13 +257,15 @@ See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for detailed roadmap.
   - Event-driven architecture
   - Complete read flow implementation
   - Hotkey and tray menu integration
+  - Structured logging throughout
 
 ## Testing
 
 All tests use mocking to avoid requiring actual voice files or audio hardware:
-- **74 tests total** across nine stages
-- **75% overall code coverage** (90% excluding main.py integration layer)
+- **71 tests total** across all modules
+- **66% overall code coverage** (main.py integration layer at 0%, core modules at 72-97%)
 - Tests run in CI on every PR (macOS, Python 3.12)
+- Zero external dependencies for testing (no voice files, network, audio hardware, or GUI)
 
 ## CI/CD
 

@@ -72,9 +72,18 @@ class TrayApplication:
         dc.polygon([7*scale, 12*scale, 5*scale, 15*scale, 9*scale, 14*scale], fill="black")
 
         # Sound waves (3 curved lines at bottom right)
-        dc.arc([12*scale, 13*scale, 16*scale, 17*scale], start=270, end=90, fill="black", width=2*scale)
-        dc.arc([15*scale, 12*scale, 19*scale, 18*scale], start=270, end=90, fill="black", width=2*scale)
-        dc.arc([17*scale, 11*scale, 21*scale, 19*scale], start=270, end=90, fill="black", width=2*scale)
+        dc.arc(
+            [12*scale, 13*scale, 16*scale, 17*scale],
+            start=270, end=90, fill="black", width=2*scale
+        )
+        dc.arc(
+            [15*scale, 12*scale, 19*scale, 18*scale],
+            start=270, end=90, fill="black", width=2*scale
+        )
+        dc.arc(
+            [17*scale, 11*scale, 21*scale, 19*scale],
+            start=270, end=90, fill="black", width=2*scale
+        )
 
         return image
 
