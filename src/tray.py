@@ -1,15 +1,12 @@
 """System tray application with menu bar icon."""
 
 
-import io
 import os
 
 import numpy as np
 import pystray
 from PIL import Image
 from pystray import Menu, MenuItem
-from reportlab.graphics import renderPM
-from svglib.svglib import svg2rlg
 
 from src.logger import get_logger
 
@@ -46,25 +43,17 @@ class TrayApplication:
         logger.info("tray_app_initialized")
 
     def _create_icon_image(self) -> Image.Image:
-        """Create TTS icon from SVG tropical drink emoji.
+        """Load TTS icon from PNG file.
 
         Returns:
-            PIL Image for the tray icon (tropical drink with lime and straw)
+            PIL Image for the tray icon (speaker icon)
         """
-        # Get path to SVG icon (relative to this file)
+        # Get path to PNG icon (relative to this file)
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        svg_path = os.path.join(os.path.dirname(current_dir), "assets", "icon.svg")
+        png_path = os.path.join(os.path.dirname(current_dir), "assets", "sound.png")
 
-        # Convert SVG to reportlab drawing
-        drawing = svg2rlg(svg_path)
-
-        # Render to PNG in memory at menu bar size (44x44 for @2x)
-        png_data = io.BytesIO()
-        renderPM.drawToFile(drawing, png_data, fmt='PNG', dpi=72, bg=0x00000000)
-        png_data.seek(0)
-
-        # Load as PIL Image and resize to exact dimensions
-        image = Image.open(png_data)
+        # Load PNG image and resize to menu bar size (44x44 for @2x)
+        image = Image.open(png_path)
         image = image.resize((44, 44), Image.Resampling.LANCZOS)
 
         return image
