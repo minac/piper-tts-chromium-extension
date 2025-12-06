@@ -67,10 +67,6 @@ class TrayApplication:
         image = Image.open(png_data)
         image = image.resize((44, 44), Image.Resampling.LANCZOS)
 
-        # Convert to RGBA to ensure transparency
-        if image.mode != 'RGBA':
-            image = image.convert('RGBA')
-
         return image
 
     def _create_menu(self) -> Menu:

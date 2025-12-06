@@ -1,10 +1,9 @@
-# Piper TTS Menu Bar Reader
+# Speakeasy
 
 macOS menu bar application for reading text and URLs aloud using Piper TTS.
 
 ## Features
 
-### Completed ✓
 - 🎙️ Offline text-to-speech using Piper TTS
   - Voice discovery from local `.onnx` files
   - Speed adjustment (0.5x - 2.0x)
@@ -40,7 +39,7 @@ macOS menu bar application for reading text and URLs aloud using Piper TTS.
   - Speed submenu (0.5x - 2.0x)
   - Dynamic Play/Pause/Resume text
   - Conditional Download menu item
-  - Generated speaker icon
+  - SVG icon with macOS template support (auto-inverts on dark menu bar)
 - 🪟 UI Windows
   - Input window for text/URL entry
   - Settings window for configuration
@@ -75,8 +74,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ```bash
 # Clone repository
-git clone https://github.com/minac/piper-tts-chromium-extension.git
-cd piper-tts-chromium-extension
+git clone https://github.com/minac/speakeasy.git
+cd speakeasy
 
 # Install Python dependencies
 uv sync --extra dev
@@ -107,41 +106,7 @@ cd ..
    uv run python -m src.main
    ```
 3. **Look for the speaker icon** in your macOS menu bar (top-right)
-4. **Click the icon** to access the menu:
-   - **Play**: Opens input window for text/URL entry
-   - **Speed**: Adjust playback speed (0.5x - 2.0x)
-   - **Download MP3**: Save current audio to file
-   - **Settings**: Configure voice, speed, output directory
-   - **Quit**: Exit the application
-
-### Using the Application
-
-**Reading Text:**
-1. Click the speaker icon → Play (or press configured hotkey)
-2. Enter text in the input window
-3. Click "Read" - audio will synthesize and play automatically
-4. Use menu to Pause/Resume/Stop playback
-
-**Reading URLs:**
-1. Click Play and paste a URL (e.g., article, Wikipedia page)
-2. Click "Read" - text will be extracted and read aloud
-
-**Changing Speed:**
-1. While playing, click Speed submenu
-2. Select desired speed (0.5x - 2.0x)
-3. Playback restarts automatically with new speed
-
-**Exporting to MP3:**
-1. After reading text, click "Download MP3"
-2. File saved to configured output directory (default: ~/Downloads)
-3. Filename format: `first_5_words_YYYYMMDD_HHMMSS.mp3`
-
-**Configuring Settings:**
-1. Click Settings in menu
-2. Choose voice from dropdown
-3. Adjust default speed
-4. Set output directory for MP3 exports
-5. Click Save
+4. **Click the icon** to access the menu
 
 ## Development
 
@@ -162,9 +127,10 @@ uv run ruff check --fix src/ tests/
 ## Project Structure
 
 ```
-piper-tts-chromium-extension/
+speakeasy/
 ├── src/
-│   ├── main.py              # Application entry point
+│   ├── main.py              # Application entry point & coordinator
+│   ├── logger.py            # Structured logging
 │   ├── tts_engine.py        # Piper TTS wrapper
 │   ├── audio_player.py      # Audio playback controller
 │   ├── text_extractor.py    # URL and text processing
@@ -186,80 +152,14 @@ piper-tts-chromium-extension/
 │   ├── test_input_window.py
 │   ├── test_settings_window.py
 │   └── conftest.py
+├── assets/
+│   └── icon.svg             # Menu bar icon (SVG)
 ├── voices/                  # Piper voice models (.onnx)
 ├── config.json             # User settings (auto-generated)
 ├── pyproject.toml          # Project metadata and dependencies
+├── CLAUDE.md               # Project instructions for Claude
 └── IMPLEMENTATION_PLAN.md  # Detailed implementation roadmap
 ```
-
-## Implementation Status
-
-See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for detailed roadmap.
-
-- ✅ **Stage 1**: Project Foundation & TTS Core
-  - Project structure with proper packaging
-  - PiperTTSEngine class with voice management
-  - Speed adjustment and error handling
-  - Test suite (8 tests, 94% coverage)
-
-- ✅ **Stage 2**: Audio Playback Controller
-  - AudioPlayer class with full controls
-  - State management (STOPPED, PLAYING, PAUSED)
-  - Thread-safe operations
-  - Test suite (13 tests, 83% coverage)
-
-- ✅ **Stage 3**: Text Extraction
-  - TextExtractor class with URL detection
-  - HTML parsing and content cleaning
-  - Whitespace normalization
-  - Test suite (8 tests, 95% coverage)
-
-- ✅ **Stage 4**: Settings Management
-  - Settings class with JSON persistence
-  - Default configuration schema
-  - Nested settings access with dot notation
-  - Test suite (7 tests, 86% coverage)
-
-- ✅ **Stage 5**: MP3 Export
-  - AudioExporter class for WAV to MP3 conversion
-  - Smart filename generation with timestamps
-  - Conflict resolution for duplicate names
-  - Test suite (5 tests, 97% coverage)
-
-- ✅ **Stage 6**: Global Hotkeys
-  - HotkeyManager class with pynput integration
-  - Hotkey string parsing ("ctrl+shift+p" → pynput format)
-  - Register/unregister hotkeys with callbacks
-  - Validation for invalid formats
-  - Test suite (6 tests, 91% coverage)
-
-- ✅ **Stage 7**: System Tray Integration
-  - TrayApplication class with menu bar icon
-  - Speed submenu with 6 options (0.5x - 2.0x)
-  - Dynamic Play/Pause/Resume menu text
-  - Conditional Download MP3 menu item
-  - PIL-generated speaker icon
-  - Test suite (9 tests, 83% coverage)
-
-- ✅ **Stage 8**: UI Windows
-  - InputWindow class for text/URL entry
-  - SettingsWindow class for configuration
-  - tkinter/ttk-based dialogs
-  - Test suite (17 tests, 95% coverage)
-
-- ✅ **Stage 9**: Application Integration
-  - PiperTTSApp main coordinator class
-  - All components wired together
-  - Event-driven architecture
-  - Complete read flow implementation
-  - Hotkey and tray menu integration
-
-## Testing
-
-All tests use mocking to avoid requiring actual voice files or audio hardware:
-- **74 tests total** across nine stages
-- **75% overall code coverage** (90% excluding main.py integration layer)
-- Tests run in CI on every PR (macOS, Python 3.12)
 
 ## CI/CD
 

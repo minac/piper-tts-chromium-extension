@@ -1,4 +1,4 @@
-# Piper TTS Menu Bar Reader - Project Instructions
+# Speakeasy - Project Instructions
 
 ## Permissions
 - All `git` commands are allowed without confirmation (checkout, add, commit, push, pull, branch, merge)
@@ -33,13 +33,15 @@
   - Python 3.13+ not supported due to pydub/audioop incompatibility
 
 ### Module Responsibilities
+- `main.py`: Application coordinator (PiperTTSApp), wires all components together
+- `logger.py`: Structured logging with context fields
 - `tts_engine.py`: Voice discovery, loading, text→audio synthesis
 - `audio_player.py`: Playback control, state management, callbacks
 - `text_extractor.py`: URL fetching, HTML parsing, content extraction
 - `settings.py`: JSON persistence, config management with dot notation
 - `export.py`: WAV to MP3 conversion, filename generation
 - `hotkeys.py`: Global keyboard shortcuts with pynput
-- `tray.py`: System tray icon with menu (pystray + PIL)
+- `tray.py`: System tray icon with menu (pystray + svglib for SVG icon)
 - `ui/input_window.py`: Text/URL input dialog (tkinter)
 - `ui/settings_window.py`: Configuration dialog (tkinter/ttk)
 
@@ -72,7 +74,8 @@
 
 **System Tray**:
 - pystray for menu bar icon
-- PIL-generated speaker icon (64x64)
+- SVG icon (assets/icon.svg) loaded via svglib + reportlab, rendered at 44x44 @2x for retina
+- macOS template icon support (auto-inverts on dark menu bar)
 - Dynamic menu text (Play/Pause/Resume)
 - Speed submenu (6 options: 0.5x - 2.0x)
 - Conditional Download menu item
@@ -82,30 +85,43 @@
 - InputWindow: text area, clipboard paste, Read/Cancel buttons
 - SettingsWindow: voice dropdown, speed scale, directory picker
 
+**Logging**:
+- Structured logging via logger.py
+- Context fields (e.g., voice_name, speed, text_length)
+- Log levels: DEBUG for detailed flow, INFO for key events
+- Integration throughout all modules
+
 ### Testing Strategy
 - Mock external dependencies (Piper API, sounddevice, filesystem, network, pynput, pystray, tkinter)
-- Unit tests for each module with high coverage (90% overall)
-- 74 tests across 8 stages
-- CI runs on macOS with Python 3.12
+- Unit tests for each module with high coverage (core modules 72-97%)
+- 71 tests total across all modules
+- CI runs on macOS with Python 3.12 via GitHub Actions
 - No real voice files, network calls, audio hardware, or GUI needed
+- Zero test dependencies on external resources
 
 ### Current Limitations
-- No real-time speed change during playback (must restart)
+- No real-time speed change during playback (must restart playback)
 - No streaming synthesis (full text→audio upfront)
-- No chunking for long texts (memory constraint risk)
-- Audio playback lines 187-227 not fully tested (thread/callback edge cases)
+- No chunking for long texts (memory constraint risk for very large documents)
+- Main integration layer (main.py) not tested (185 lines at 0% coverage)
+- Some edge cases in audio playback threading/callbacks not fully covered
 - Python 3.13+ not supported (pydub requires audioop, removed in 3.13)
+- Windows/Linux support untested (macOS-first development)
 
 ### Completed Stages
-- ✅ Stage 1: TTS Core (PiperTTSEngine)
-- ✅ Stage 2: Audio Playback (AudioPlayer)
-- ✅ Stage 3: Text Extraction (TextExtractor)
-- ✅ Stage 4: Settings Management (Settings)
-- ✅ Stage 5: MP3 Export (AudioExporter)
-- ✅ Stage 6: Global Hotkeys (HotkeyManager)
-- ✅ Stage 7: System Tray (TrayApplication)
-- ✅ Stage 8: UI Windows (InputWindow, SettingsWindow)
+- ✅ Stage 1: TTS Core (PiperTTSEngine) - 8 tests, 91% coverage
+- ✅ Stage 2: Audio Playback (AudioPlayer) - 13 tests, 82% coverage
+- ✅ Stage 3: Text Extraction (TextExtractor) - 8 tests, 95% coverage
+- ✅ Stage 4: Settings Management (Settings) - 7 tests, 86% coverage
+- ✅ Stage 5: MP3 Export (AudioExporter) - 5 tests, 97% coverage
+- ✅ Stage 6: Global Hotkeys (HotkeyManager) - 6 tests, 91% coverage
+- ✅ Stage 7: System Tray (TrayApplication) - 6 tests, 75% coverage
+- ✅ Stage 8: UI Windows (InputWindow, SettingsWindow) - 17 tests, 72-93% coverage
+- ✅ Stage 9: Integration & Main App (PiperTTSApp) - main.py complete, 0% test coverage
 
-### Next Stage Priorities
-1. Integration & Main App (Stage 9) - Wire all components together
-2. Manual Testing & Polish (Stage 10) - End-to-end testing, bug fixes
+### Next Priorities
+1. **Manual Testing & Polish** - End-to-end testing with real voice files
+2. **Integration Tests** - Test main.py coordinator with integrated components
+3. **Bug Fixes** - Address issues found during manual testing
+4. **Performance** - Optimize for large texts, reduce memory usage
+5. **Cross-platform** - Test on Linux/Windows, fix platform-specific issues
