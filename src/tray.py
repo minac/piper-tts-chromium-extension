@@ -1,7 +1,6 @@
 """System tray application with menu bar icon."""
 
 
-import numpy as np
 import pystray
 from PIL import Image, ImageDraw
 from pystray import Menu, MenuItem
@@ -17,10 +16,6 @@ class TrayApplication:
     def __init__(self):
         """Initialize TrayApplication."""
         logger.info("initializing_tray_app")
-        self._is_playing = False
-        self._is_paused = False
-        self._audio_data: np.ndarray | None = None
-        self._sample_rate: int | None = None
         self._icon = None
 
         # Create menu
@@ -92,14 +87,6 @@ class TrayApplication:
             MenuItem("Quit", lambda icon, item: self._quit(icon, item)),
         )
 
-    def _has_audio(self) -> bool:
-        """Check if audio data is available.
-
-        Returns:
-            True if audio is ready for playback/export
-        """
-        return self._audio_data is not None and self._sample_rate is not None
-
     def _read_text(self, icon, item):
         """Open input window for text/URL entry.
 
@@ -110,30 +97,6 @@ class TrayApplication:
         logger.info("read_text_clicked")
         # TODO: Open input window
         pass
-
-    def _play_pause(self, icon, item):
-        """Start playback.
-
-        Args:
-            icon: pystray Icon
-            item: pystray MenuItem
-        """
-        logger.info("play_clicked")
-        self._is_playing = True
-        self._is_paused = False
-        logger.info("starting_playback")
-        # TODO: Start audio player
-
-    def _stop(self, icon, item):
-        """Stop playback.
-
-        Args:
-            icon: pystray Icon
-            item: pystray MenuItem
-        """
-        self._is_playing = False
-        self._is_paused = False
-        # TODO: Stop audio player
 
     def _open_settings(self, icon, item):
         """Open settings window.
