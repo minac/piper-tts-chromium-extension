@@ -62,7 +62,14 @@ class PiperTTSApp:
         logger.debug("settings_loaded")
 
         # Initialize TTS engine
-        voices_dir = Path(__file__).parent.parent / "voices"
+        # When bundled with PyInstaller, use sys._MEIPASS
+        if getattr(sys, 'frozen', False):
+            # Running in bundled app
+            bundle_dir = Path(sys._MEIPASS)
+            voices_dir = bundle_dir / "voices"
+        else:
+            # Running in development
+            voices_dir = Path(__file__).parent.parent / "voices"
         self._tts_engine = PiperTTSEngine(str(voices_dir))
 
         # Load voice from settings (or first available voice)

@@ -101,6 +101,65 @@ cd ..
 3. **Look for the speaker icon** in your macOS menu bar (top-right)
 4. **Click the icon** to access the menu
 
+## Building for macOS
+
+Create a standalone macOS app bundle that runs in the background and can start on login:
+
+### Build the App
+
+```bash
+# Run the build script
+./build_app.sh
+```
+
+This creates `dist/Speakeasy.app` - a complete macOS application bundle.
+
+### Install the App
+
+1. **Copy to Applications**:
+   ```bash
+   cp -r dist/Speakeasy.app /Applications/
+   ```
+
+2. **Add voice files**:
+   - Copy your Piper voice files (`.onnx` + `.json`) to:
+   - `/Applications/Speakeasy.app/Contents/Resources/voices/`
+
+3. **Configure auto-start** (optional):
+   - Open **System Settings** → **General** → **Login Items**
+   - Click the **+** button
+   - Select **Speakeasy.app** from Applications
+   - The app will now start automatically on login
+
+### Features of the Packaged App
+
+- Runs in the background (no Dock icon)
+- Lives in the menu bar only
+- Self-contained with all dependencies
+- Auto-start on login (when configured)
+- Works like any native macOS app
+
+### Manual Build (Alternative)
+
+```bash
+# Clean previous builds
+rm -rf build dist
+
+# Install dependencies
+uv sync --extra dev
+
+# Build with PyInstaller
+uv run pyinstaller speakeasy.spec --clean --noconfirm
+```
+
+### Technical Details
+
+The build process uses **PyInstaller** to create a native macOS app bundle:
+- `speakeasy.spec` - PyInstaller configuration file
+- All Python dependencies bundled automatically
+- `LSUIElement=True` in Info.plist hides app from Dock
+- Assets and voice directory structure included
+
 ## Development
 
 ```bash

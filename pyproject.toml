@@ -24,6 +24,7 @@ dev = [
     "pytest-mock>=3.10.0",
     "pytest-cov>=4.0.0",
     "ruff>=0.1.0",
+    "pyinstaller>=6.0.0",
 ]
 
 [build-system]
