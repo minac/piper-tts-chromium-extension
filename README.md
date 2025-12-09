@@ -76,7 +76,7 @@ uv sync --extra dev
 
 ### 3. Download Piper Voice Models
 
-Download voice models from [Piper TTS releases](https://github.com/rhasspy/piper/releases) and place them in the `voices/` directory:
+Download voice models from [Piper Huggingface](https://huggingface.co/rhasspy/piper-voices/tree/main)) and place them in the `voices/` directory:
 
 ```bash
 # Create voices directory
@@ -84,8 +84,8 @@ mkdir -p voices
 
 # Example: Download a voice model
 cd voices
-wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx
-wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
+wget https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/high/en_US-lessac-high.onnx
+wget https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/high/en_US-lessac-high.onnx.json
 cd ..
 ```
 
