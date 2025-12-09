@@ -84,8 +84,8 @@ mkdir -p voices
 
 # Example: Download a voice model
 cd voices
-wget https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/high/en_US-lessac-high.onnx
-wget https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/high/en_US-lessac-high.onnx.json
+curl -L -o en_US-lessac-high.onnx https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/high/en_US-lessac-high.onnx
+curl -L -o en_US-lessac-high.onnx.json https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/high/en_US-lessac-high.onnx.json
 cd ..
 ```
 
